@@ -1,32 +1,42 @@
 import React from 'react';
+import { useCookies } from "react-cookie";
 import './Message.css';
 
-const Message = ({ message: {user, text }, name }) => {
-    let isSentByCurrentUser = false;
+import ReactEmoji from 'react-emoji';
 
-    const trimmedName = name.trim().toLowerCase();
+const Message = ({ message: { userName, userNickname, text, textColor, timestamp}, name }) => {
+  let isSentByCurrentUser = false; 
+  /*console.log("Client log [");
+  const mymsg = { userName, userNickname, text, textColor, timestamp};
+  console.log(mymsg);
+  console.log("]");*/
+  //let trimmedName = name.trim().toLowerCase();
+  const [cookies, setCookie] = useCookies(["nickname"]);
 
-    if(user === trimmedName){
-        isSentByCurrentUser = true;
-    }
-    
-    return (
-        isSentByCurrentUser ? (
-            <div className="messageContainer justifyEnd">
-                <p className="sentText pr-10">{trimmedName}</p>
-                <div className="messageBox backGroundBlue">
-                    <p className="messageText colorWhite">{text}</p>
-                </div>
-            </div>
-        ) : (
-            <div className="messageContainer justifyStart">
-                <div className="messageBox backgroundLight">
-                    <p className="messageText colorDark">{text}</p>
-                </div>
-                <p className="sentText pl-10">{user}</p>
-            </div>
+
+  if(userNickname === cookies.nickname) {
+    isSentByCurrentUser = true;
+  }
+
+  return (
+    isSentByCurrentUser
+      ? (
+        <div className="messageContainer justifyEnd">
+          <p className="sentText pr-10" style={{color:textColor}}>{timestamp+ " " + userNickname}</p>
+          <div className="messageBox backgroundBlue">
+            <p className="messageText colorWhite">{ReactEmoji.emojify(text)}</p>
+          </div>
+        </div>
         )
-    );
-}    
+        : (
+          <div className="messageContainer justifyStart">
+            <div className="messageBox backgroundLight">
+              <p className="messageText colorDark" >{ReactEmoji.emojify(text)}</p>
+            </div>
+            <p className="sentText pl-10 " style={{color:textColor}}>{userNickname+ " " + timestamp}</p>
+          </div>
+        )
+  );
+}
 
 export default Message;
